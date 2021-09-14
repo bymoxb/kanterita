@@ -1,0 +1,12 @@
+version: "3.1"
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=kanterita
+      - POSTGRES_PASSWORD=kanterita
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
