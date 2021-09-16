@@ -1,9 +1,9 @@
 import { useAuthContext } from "contexts/AuthContext";
 import { useFormik } from "formik";
 import { VALIDATION_MESSAGES } from "libs/validationMessages";
-import { Rol } from "models/enums";
 import { IUser } from "models/interfaces";
 import { useState } from "react";
+import { AuthService } from "services";
 import * as yup from "yup";
 
 interface IUserForm {
@@ -12,8 +12,8 @@ interface IUserForm {
 }
 
 const initialValues: IUserForm = {
-  username: "luis",
-  password: "password",
+  username: "1234567890",
+  password: "1234567890",
 };
 
 const validationSchema = yup.object().shape({
@@ -28,24 +28,22 @@ const useAuth = () => {
     setAuth,
   } = useAuthContext();
   const [submitting, setSubmitting] = useState(false);
+  const [responseMessages, setResponseMessages] = useState<undefined | string[]>(undefined);
 
-  const onSubmit = (values: IUserForm) => {
+  const onSubmit = async (values: IUserForm) => {
+
     setSubmitting(true);
+    setResponseMessages(undefined);
 
-    setTimeout(() => {
-      setSubmitting(false);
+    const result = await AuthService.login(values.username, values.password);
 
-      setAuth({
-        checkingAuth: false,
-        isAuth: true,
-        user: {
-          id: 1,
-          rol: Rol.ADMIN,
-          username: "luis"
-        }
-      });
+    if (result.ok) {
+      checkAuth();
+    } else {
+      setResponseMessages(result.message);
+    }
 
-    }, 2000);
+    setSubmitting(false);
   };
 
   const formik = useFormik({
@@ -61,20 +59,20 @@ const useAuth = () => {
       checkingAuth: true,
     });
 
-    setTimeout(() => {
-      setAuth({
-        checkingAuth: false,
-        isAuth: true,
-        user: {
-          id: 1,
-          rol: Rol.ADMIN,
-          username: "luis"
+    AuthService.checkUser()
+      .then(result => {
+        if (result.ok) {
+          setAuth({ checkingAuth: false, isAuth: true, user: result.payload });
+        } else {
+          setAuth({ checkingAuth: false, isAuth: false, user: {} as IUser });
         }
       });
-    }, 2000);
   };
 
   const logout = () => {
+
+    localStorage.clear();
+
     setAuth({
       checkingAuth: false,
       isAuth: false,
@@ -87,6 +85,7 @@ const useAuth = () => {
     submitting,
     checkAuth,
     logout,
+    responseMessages,
   };
 };
 

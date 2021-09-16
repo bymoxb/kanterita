@@ -1,30 +1,26 @@
-import React from "react";
-
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-
-import {
-  Box,
-  Container,
-  CssBaseline,
-  Typography,
-} from "@mui/material";
 import {
   LoadingButton
 } from "@mui/lab";
-
-
+import {
+  Alert,
+  AlertTitle,
+  Box,
+  Container,
+  CssBaseline,
+  Typography
+} from "@mui/material";
 import Input from "components/Input";
 import useAuth from "hooks/useAuth";
-import { useTheme } from "@mui/material/styles";
+import React from "react";
 
 const Login: React.FC = () => {
 
   const {
     formik,
     submitting,
+    responseMessages,
   } = useAuth();
-
-  const theme = useTheme();
 
   return (
     <Container component="main" maxWidth="xs">
@@ -85,6 +81,17 @@ const Login: React.FC = () => {
           >
             Ingresar
           </LoadingButton>
+
+          {
+            responseMessages && (
+              <Alert severity="error">
+                <AlertTitle>Error</AlertTitle>
+                {responseMessages.map((item, i) => (
+                  <div key={i}>{item}</div>
+                ))}
+              </Alert>
+            )
+          }
 
         </Box>
       </Box>

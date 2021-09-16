@@ -21,6 +21,10 @@ import PrivateLayout from "layout/PrivateLayout";
 
 import LoadingScreen from "components/LoadingScreen";
 
+import { initaxios } from "libs/axios";
+
+initaxios();
+
 const App: React.FC = () => {
   return (
     <AuthProvider>
