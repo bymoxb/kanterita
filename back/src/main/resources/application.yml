@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: kanterita
+    password: kanterita
+  jpa:
+    hibernate:
+      ddl-auto: create
+  pid:
+    fail-on-write-error: false
+server:
+  error:
+    include-stacktrace: never

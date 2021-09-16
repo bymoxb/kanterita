@@ -1,11 +1,17 @@
 package com.kruger.kanterita.models;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "vaccine")
-public class Vaccine {
+public class Vaccine implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,4 +32,14 @@ public class Vaccine {
     @JoinColumn(name = "employee_id", unique = true)
     private Employee employee;
 
+    public Vaccine(Date vaccination_date, Integer doses_number, VaccineType vaccineType, Employee employee) {
+        this.vaccination_date = vaccination_date;
+        this.doses_number = doses_number;
+        this.vaccineType = vaccineType;
+        this.employee = employee;
+    }
+
+    public Vaccine() {
+
+    }
 }
