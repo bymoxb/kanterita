@@ -1,6 +1,6 @@
 import React from "react";
 import { LoadingButton } from "@mui/lab";
-import { Box, Divider, Typography, Grid, FormControl, FormControlLabel, Switch } from "@mui/material";
+import { Box, Divider, Typography, Grid, FormControl, FormControlLabel, Switch, Alert, AlertTitle, } from "@mui/material";
 import Input from "components/Input";
 import useProfile from "hooks/useProfile";
 import DatePicker from "components/DatePicker";
@@ -12,6 +12,7 @@ const Profile: React.FC = () => {
     formik,
     submitting,
     vaccineTypes,
+    responseMessages,
   } = useProfile();
 
   return (
@@ -193,6 +194,19 @@ const Profile: React.FC = () => {
               </LoadingButton>
             </Box>
           </Grid>
+
+          {
+            responseMessages && (
+              <Grid item xs={12} sx={{ mt: 2 }}>
+                <Alert severity="warning">
+                  <AlertTitle>Advertencia</AlertTitle>
+                  {responseMessages.map((item, i) => (
+                    <div key={i} className="error-message">{item}</div>
+                  ))}
+                </Alert>
+              </Grid>
+            )
+          }
 
         </Grid>
       </Box>

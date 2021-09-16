@@ -32,7 +32,7 @@ const Select: React.FC<SelectProps> = ({
       <SelectBase
         labelId={id}
         id={id}
-        value={value || -1}
+        value={items.length === 0 ? -1 : value || -1}
         label={label}
         onChange={(e) => onChange(+e.target.value)}
       >

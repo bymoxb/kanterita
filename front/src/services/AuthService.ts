@@ -1,7 +1,6 @@
 import axios from "axios";
 import qs from "qs";
 import { IHttpStatus, IUser } from "models/interfaces";
-import { AutoFixHighSharp } from "@mui/icons-material";
 
 export async function login(username: string, password: string): Promise<IHttpStatus<boolean>> {
   try {

@@ -1,7 +1,8 @@
 import { useFormik } from "formik";
 import { VALIDATION_MESSAGES } from "libs/validationMessages";
 import { IEmployeeForm, IVaccineType } from "models/interfaces";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { EmployeeService, VaccineTypesService } from "services";
 import * as yup from "yup";
 
 const initialValues: IEmployeeForm = {
@@ -23,16 +24,48 @@ const initialValues: IEmployeeForm = {
 const useProfile = () => {
 
   const [vaccineTypes, setVaccineTypes] = useState<IVaccineType[]>([]);
-
   const [submitting, setSubmitting] = useState(false);
+  const [responseMessages, setResponseMessages] = useState<undefined | string[]>(undefined);
 
-  const onSubmit = (values: IEmployeeForm) => {
-    alert(JSON.stringify(values, null, 2));
+  const [profile, setProfile] = useState<IEmployeeForm>(initialValues);
+
+  useEffect(() => {
+    setSubmitting(true);
+    Promise.all([
+      EmployeeService.me()
+        .then(result => {
+          if (result.ok) {
+            setProfile(result.payload);
+          }
+        }),
+      VaccineTypesService.getAll()
+        .then(result => setVaccineTypes(result.payload)),
+    ]).finally(() => setSubmitting(false));
+  }, []);
+
+  const onSubmit = async (values: IEmployeeForm) => {
+    setSubmitting(true);
+    setResponseMessages(undefined);
+
+    console.log("llega");
+
+
+    const result = await EmployeeService.update(values);
+
+    if (result.ok) {
+      setProfile(result.payload);
+      formik.resetForm();
+    } else {
+      console.log("error");
+      setResponseMessages(result.message);
+    }
+
+    setSubmitting(false);
   };
 
   const formik = useFormik({
     enableReinitialize: true,
-    initialValues,
+    initialValues: profile,
     onSubmit,
     validationSchema: yup.object().shape({
       birthday: yup.date().required(VALIDATION_MESSAGES.require).typeError(VALIDATION_MESSAGES.require),
@@ -49,6 +82,7 @@ const useProfile = () => {
     formik,
     submitting,
     vaccineTypes,
+    responseMessages,
   };
 };
 

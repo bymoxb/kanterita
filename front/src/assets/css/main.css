@@ -1,0 +1,7 @@
+.error-message{
+  text-transform: lowercase;
+}
+
+.error-message::first-letter{
+  text-transform: uppercase;
+}
