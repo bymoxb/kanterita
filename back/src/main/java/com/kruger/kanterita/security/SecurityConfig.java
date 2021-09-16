@@ -16,6 +16,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -36,14 +38,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         customAuthenticationFilter.setFilterProcessesUrl("/api/login");
 
         http.csrf().disable();
-        http.cors().disable();
+        http.cors();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/login/**").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/employee/me").hasAnyAuthority(Rol.EMPLOYEE.name(), Rol.ADMIN.name());
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/vaccine-types").hasAnyAuthority(Rol.EMPLOYEE.name(), Rol.ADMIN.name());
+        http.authorizeRequests().antMatchers(HttpMethod.PUT, "/api/employee").hasAnyAuthority(Rol.EMPLOYEE.name(), Rol.ADMIN.name());
         http.authorizeRequests().antMatchers("/api/employee/**").hasAnyAuthority(Rol.ADMIN.name());
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/api/**")
+                        .allowedOrigins("http://localhost:3000")
+                        .allowedMethods("GET", "PUT", "POST", "PATCH", "DELETE", "OPTIONS");
+            }
+        };
     }
 
     @Bean

@@ -1,5 +1,7 @@
 package com.kruger.kanterita.models;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -9,6 +11,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "vaccine_types")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class VaccineType implements Serializable {
 
     @Id

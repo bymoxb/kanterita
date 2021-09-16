@@ -86,16 +86,15 @@ public class EmployeeController {
         return new ResponseEntity<>(employeeService.create(employee), HttpStatus.CREATED);
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity<Employee> update(@Valid @RequestBody EmployeeUpdateVO request, @PathVariable Long id) throws ParseException {
+    @PutMapping
+    public ResponseEntity<Employee> update(@Valid @RequestBody EmployeeUpdateVO request) throws ParseException {
 
-        Optional<Employee> tempEmployee = employeeService.getById(id);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Employee employee = employeeService.findByCi(auth.getName());
 
-        if (!tempEmployee.isPresent()) {
+        if (employee == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
-        Employee employee = tempEmployee.get();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
