@@ -1,5 +1,5 @@
 import { LoadingButton } from "@mui/lab";
-import { Box, Divider, Typography, Grid } from "@mui/material";
+import { Box, Divider, Typography, Grid, Alert, AlertTitle } from "@mui/material";
 import Input from "components/Input";
 import useEmployee from "hooks/useEmployee";
 import React from "react";
@@ -9,6 +9,7 @@ const Employee: React.FC = () => {
   const {
     submitting,
     formik,
+    responseMessages,
   } = useEmployee();
 
   return (
@@ -106,6 +107,20 @@ const Employee: React.FC = () => {
               </LoadingButton>
             </Box>
           </Grid>
+
+          {
+            responseMessages && (
+              <Grid item xs={12} sx={{ mt: 2 }}>
+                <Alert severity="warning">
+                  <AlertTitle>Advertencia</AlertTitle>
+                  {responseMessages.map((item, i) => (
+                    <div key={i}>{item}</div>
+                  ))}
+                </Alert>
+              </Grid>
+            )
+          }
+
         </Grid>
       </Box>
 

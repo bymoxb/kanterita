@@ -2,6 +2,7 @@ import { useFormik } from "formik";
 import { VALIDATION_MESSAGES } from "libs/validationMessages";
 import { IEmployeeForm } from "models/interfaces";
 import { useState } from "react";
+import { EmployeeService } from "services";
 import { verificarCedula } from "udv-ec";
 import * as yup from "yup";
 
@@ -24,9 +25,22 @@ const validationSchema = yup.object().shape({
 const useEmployee = () => {
 
   const [submitting, setSubmitting] = useState(false);
+  const [responseMessages, setResponseMessages] = useState<undefined | string[]>(undefined);
 
-  const onSubmit = (values: IEmployeeForm) => {
-    alert(JSON.stringify(values, null, 2));
+  const onSubmit = async (values: IEmployeeForm) => {
+
+    setSubmitting(true);
+    setResponseMessages(undefined);
+
+    const result = await EmployeeService.create(values);
+
+    if (result.ok) {
+      formik.resetForm();
+    } else {
+      setResponseMessages(result.message);
+    }
+
+    setSubmitting(false);
   };
 
   const formik = useFormik({
@@ -38,6 +52,7 @@ const useEmployee = () => {
   return {
     formik,
     submitting,
+    responseMessages,
   };
 };
 
