@@ -9,6 +9,7 @@ import com.kruger.kanterita.repositories.UserRepository;
 import com.kruger.kanterita.repositories.VaccineTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +29,7 @@ public class EmployeeService {
     }
 
     public List<Employee> getAll() {
-        return (List<Employee>) employeeRepository.findAll();
+        return employeeRepository.findAll(Sort.by("id").ascending());
     }
 
     public Employee findByCi(String ci) {
