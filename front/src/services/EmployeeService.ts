@@ -1,4 +1,4 @@
-import { IEmployeeForm, IHttpStatus } from "models/interfaces";
+import { IEmployeeForm, IHttpStatus, IEmployee } from "models/interfaces";
 import axios from "axios";
 import { format } from "date-fns";
 
@@ -28,8 +28,16 @@ export async function update(values: IEmployeeForm): Promise<IHttpStatus<IEmploy
     });
     return { ok: true, payload: castDatResponseToFormData(data) };
   } catch (error: any) {
-    console.log(error);
     return { ok: false, payload: {} as IEmployeeForm, message: error?.response?.data?.errors.map((item: any) => item.defaultMessage) };
+  }
+}
+
+export async function getAll(): Promise<IHttpStatus<IEmployee[]>> {
+  try {
+    const { data } = await axios.get("/employee");
+    return { ok: true, payload: data };
+  } catch (error) {
+    return { ok: false, payload: [] };
   }
 }
 
@@ -44,8 +52,9 @@ export async function me(): Promise<IHttpStatus<IEmployeeForm>> {
   }
 }
 
-function castDatResponseToFormData(data: any): IEmployeeForm {
-  const employeeForm: IEmployeeForm = {
+function castDatResponseToFormData(data: any) {
+  return {
+    id: data,
     ci: data.ci,
     email: data.email,
     firstname: data.firstname,
@@ -58,6 +67,4 @@ function castDatResponseToFormData(data: any): IEmployeeForm {
     vaccination_date: data?.vaccine ? data?.vaccine?.vaccination_date ? new Date(data?.vaccine?.vaccination_date) : null : null,
     vaccine_type: data?.vaccine ? data?.vaccine?.vaccineType?.id || -1 : -1,
   };
-
-  return employeeForm;
 }
