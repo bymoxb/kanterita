@@ -32,6 +32,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         label={label}
         value={value}
         onChange={onChange}
+        disableFuture
         renderInput={(params) => <TextField {...params} error={error} helperText={helperText} />}
       />
     </LocalizationProvider>

@@ -47,16 +47,12 @@ const useProfile = () => {
     setSubmitting(true);
     setResponseMessages(undefined);
 
-    console.log("llega");
-
-
     const result = await EmployeeService.update(values);
 
     if (result.ok) {
       setProfile(result.payload);
       formik.resetForm();
     } else {
-      console.log("error");
       setResponseMessages(result.message);
     }
 
