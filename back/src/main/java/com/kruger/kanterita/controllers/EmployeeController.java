@@ -3,17 +3,14 @@ package com.kruger.kanterita.controllers;
 import com.kruger.kanterita.controllers.vo.EmployeeCreateVO;
 import com.kruger.kanterita.controllers.vo.EmployeeUpdateVO;
 import com.kruger.kanterita.models.Employee;
-import com.kruger.kanterita.models.User;
 import com.kruger.kanterita.models.Vaccine;
 import com.kruger.kanterita.models.VaccineType;
 import com.kruger.kanterita.services.EmployeeService;
 import com.kruger.kanterita.services.VaccineService;
 import com.kruger.kanterita.services.VaccineTypeService;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -24,11 +21,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
+@Api(tags = {"employee"})
 @RestController
 @RequestMapping("/api/employee")
 @Validated
@@ -40,39 +36,31 @@ public class EmployeeController {
     private final VaccineService vaccineService;
     private final VaccineTypeService vaccineTypeService;
 
+    @ApiOperation(value = "Filtrar empleados")
+    @GetMapping("/search")
+    public ResponseEntity<List<Employee>> search(
+            @ApiParam("Estado de vacunacion") @RequestParam(required = false, name = "vaccination-status", defaultValue = "true") Boolean state,
+            @ApiParam("Tipo de vacuna vacuna") @RequestParam(required = false, name = "vaccine-type") int vaccineType,
+            @ApiParam("Fecha de inicio") @RequestParam(required = false, name = "from") String from,
+            @ApiParam("Fecha de fin") @RequestParam(required = false, name = "to") String to
+    ) {
+        return new ResponseEntity<>(employeeService.getAll(), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Obtener información del usuario autenticado")
+    @GetMapping("/me")
+    public ResponseEntity<Employee> me() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return new ResponseEntity<>(employeeService.findByCi(auth.getName()), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Obtener la lista de los empleados registrados")
     @GetMapping
     public ResponseEntity<List<Employee>> getAll() {
         return new ResponseEntity<>(employeeService.getAll(), HttpStatus.OK);
     }
 
-    @GetMapping
-    @RequestMapping("/search")
-    public ResponseEntity<List<Employee>> search(
-            @RequestParam(required = false, name = "vaccination-status", defaultValue = "true") String state,
-            @RequestParam(required = false, name = "vaccine-type") String vaccineType,
-            @RequestParam(required = false, name = "from") String from,
-            @RequestParam(required = false, name = "to") String to
-    ) {
-        return new ResponseEntity<>(employeeService.getAll(), HttpStatus.OK);
-    }
-
-    @GetMapping("{id}")
-    public ResponseEntity<Employee> getById(@PathVariable Long id) {
-        Optional<Employee> employee = employeeService.getById(id);
-        if (!employee.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(employee.get(), HttpStatus.OK);
-    }
-
-    @GetMapping
-    @RequestMapping("/me")
-    public ResponseEntity<Employee> me() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        return new ResponseEntity<>(employeeService.findByCi(auth.getName()), HttpStatus.OK);
-    }
-
+    @ApiOperation(value = "Registrar un nuevo empleado")
     @PostMapping
     public ResponseEntity<Employee> create(@Valid @RequestBody EmployeeCreateVO request) {
 
@@ -86,6 +74,7 @@ public class EmployeeController {
         return new ResponseEntity<>(employeeService.create(employee), HttpStatus.CREATED);
     }
 
+    @ApiOperation(value = "Actualizar al emplado autenticado")
     @PutMapping
     public ResponseEntity<Employee> update(@Valid @RequestBody EmployeeUpdateVO request) throws ParseException {
 
