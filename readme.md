@@ -6,7 +6,7 @@ Los puertos ocupados:
 
 - Frontend (ReactJS): `3000`
 - Backend (spring-boot): `8080`
-- Base de datos: `5432`
+- Base de datos (Postgres): `5432`
 
 ## BACK
 
@@ -33,3 +33,9 @@ cd front/
 npm i
 npm start
 ```
+
+## DATABASE
+
+Modelo de base de datos
+
+![Modelo](db-model.png)
